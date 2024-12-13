@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.tianshu.dao.mapper.CostMapper">
+  <resultMap id="CostResultMap" type="com.example.tianshu.dao.model.CostDTO">
+    <result property="district"  column="district"/>
+    <result property="source"  column="source"/>
+    <result property="cost"  column="cost"/>
+  </resultMap>
+
+  <resultMap id="SoldItemResultMap" type="com.example.tianshu.dao.model.SoldItemDTO">
+    <result property="district" column="district"/>
+    <result property="source" column="source"/>
+    <result property="totalprice" column="totalprice"/>
+    <result property="name" column="name"/>
+    <result property="instime" column="instime"/>
+    <result property="number" column="number"/>
+    <result property="price" column="price"/>
+  </resultMap>
+
+  <select id="inventoryRateQuery" resultMap="CostResultMap">
+    select sum(cost) as cost from cost where source = '2'
+  </select>
+
+  <select id="weeklysoldQuery" resultMap="SoldItemResultMap">
+  <![CDATA[
+    SELECT name, price, number, instime
+    FROM solded_item
+    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY
+      AND instime < CURDATE() + INTERVAL (8 - DAYOFWEEK(CURDATE())) DAY;
+    ]]>
+</select>
+  
+</mapper>

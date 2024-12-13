@@ -1,0 +1,44 @@
+# 下面这些内容是为了让 MyBatis 映射
+# 指定 Mybatis 的 Mapper 文件
+mybatis:
+  mapper-locations: classpath:mappers/*xml
+  type-aliases-package: com.example.tianshu.mybatis.entity
+
+
+# 应用服务 WEB 访问端口
+server:
+  port: 51385
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://101.35.54.61/tianshu?characterEncoding=utf-8&useSSL=false&requireSSL=false
+    username: root
+    password: wl001017
+  jpa:
+    hibernate:
+      ddl-auto: update # 或者根据需要使用 `create`, `create-drop`, `validate`
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.MySQLDialect
+          format_sql: true
+    show-sql: true
+  redis:
+    host: localhost
+    port: 6379
+#    password: yourpassword  # 替换为你设置的密码
+    jedis:
+      pool:
+        max-idle: 10
+        min-idle: 2
+        max-active: 20
+        max-wait: 10000
+
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+
+

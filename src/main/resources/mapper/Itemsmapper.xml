@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.tianshu.dao.mapper.Itemsmapper">
+    <resultMap id="BaseResultMap" type="com.example.tianshu.dao.model.ItemsDO">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="VARCHAR"/>
+        <result property="itemNumber" column="item_number" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+        <result property="delflag" column="delflag" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="provider" column="provider" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="district" column="district" jdbcType="VARCHAR"/>
+        <result property="imageUrls" column="imageUrls" jdbcType="VARCHAR"/>
+        <result property="realQuantity" column="realQuantity" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="SoldItemResultMap" type="com.example.tianshu.dao.model.SoldItemDTO">
+        <result property="district" column="district"/>
+        <result property="source" column="source"/>
+        <result property="totalprice" column="totalprice"/>
+        <result property="sourceName" column="sourceName"/>
+    </resultMap>
+    <resultMap id="salesVolumeMap" type="com.example.tianshu.dao.model.salesVolumeDTO">
+        <result property="annualSales" column="annualSales"/>
+        <result property="historicalSales" column="historicalSales"/>
+        <result property="monthklySales" column="monthklySales"/>
+        <result property="dailySales" column="dailySales"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name, price, item_number, image, uid, remark, district, imageUrls, type, realQuantity
+    </sql>
+
+    <select id="getAllItems" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+            id, name, price, image, item_number, uid, remark, district, imageUrls
+        FROM items
+        WHERE delflag = 0
+        ORDER BY id
+            LIMIT #{pageSize} OFFSET #{pageNum}
+    </select>
+
+    <select id="getQueryItems" parameterType="com.example.tianshu.dao.model.QueryItemsDTO" resultMap="BaseResultMap">
+        SELECT id, name, price, image, item_number, uid, remark, district, imageUrls,
+            (SELECT COUNT(*) FROM items WHERE delflag = 0
+            <if test="type != null and type != ''">
+                AND type LIKE CONCAT('%', #{type}, '%')
+            </if>
+            <if test="district != null and district != ''">
+                AND district LIKE CONCAT('%', #{district}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>) AS totalItems
+            FROM items
+            WHERE delflag = 0
+            <if test="type != null and type != ''">
+                AND type LIKE CONCAT('%', #{type}, '%')
+            </if>
+            <if test="district != null and district != ''">
+                AND district LIKE CONCAT('%', #{district}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            ORDER BY id DESC
+            LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+
+
+
+    <select id="getItemById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM items
+        WHERE uid = #{uid} and delflag = 0
+    </select>
+
+    <insert id="insertItem" keyColumn="id" keyProperty="id">
+        INSERT INTO items
+            (name, price, item_number, imageUrls,image, type, district, remark, uid, provider, delflag, realQuantity)
+        VALUES
+            (#{name}, #{price}, #{itemNumber}, #{imageUrls},#{image}, #{type}, #{district}, #{remark}, #{uid}, #{provider}, 0, #{realQuantity})
+    </insert>
+
+    <update id="updateItem">
+        UPDATE items
+        <set>
+            <if test="image != null">image = #{image},</if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+
+    <update id="deleteItemById" parameterType="java.lang.String">
+        UPDATE items
+        SET
+            delflag = 1
+        WHERE uid = #{uid}
+    </update>
+
+    <update id="soldItemById" parameterType="map">
+        UPDATE items
+        <set>
+            item_number = #{itemNumber},
+            realQuantity = #{realQuantity}
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+    <update id="updateInfo" parameterType="map">
+        UPDATE items
+        <set>
+            <if test="district != null">district = #{district},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="itemNumber != null">item_number = #{itemNumber},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="realQuantity != null">realQuantity = #{realQuantity},</if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+    <insert id="insertsoldedItem" keyColumn="id" keyProperty="id">
+        INSERT INTO solded_item
+        (price, number, uid, district, type, source, name,instime)
+        VALUES
+        (#{price}, #{number}, #{uid}, #{district},#{type},#{source},#{name},#{instime})
+    </insert>
+
+    <select id="searchsoldpropbydis" resultMap="SoldItemResultMap">
+        SELECT a.district,
+               SUM(a.number * a.price) AS totalprice
+        FROM solded_item a
+        GROUP BY a.district;
+    </select>
+
+    <select id="searchsoldpropbytype" resultMap="SoldItemResultMap">
+        SELECT
+            a.source,
+            b.sourceName,
+            SUM(a.number * a.price) AS totalprice
+        FROM
+            solded_item a
+                LEFT JOIN
+            dm_source b ON a.source = b.source
+        GROUP BY
+            a.source, b.sourceName;
+    </select>
+
+    <select id="searchSales" resultMap="salesVolumeMap">
+        SELECT
+            SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
+            SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
+            SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) THEN number * price ELSE 0 END) AS annualSales,
+            SUM(number * price) AS historicalSales
+        FROM solded_item;
+    </select>
+</mapper>

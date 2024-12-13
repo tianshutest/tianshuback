@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.tianshu.dao.mapper.InterfaceCountsMapper">
+  <resultMap id="BaseResultMap" type="com.example.tianshu.dao.model.InterfaceCounts">
+    <result column="counts" jdbcType="INTEGER" property="counts" />
+  </resultMap>
+
+  <select id="countByExample" parameterType="com.example.tianshu.dao.model.InterfaceCounts" resultType="int">
+    select counts from interface_counts
+  </select>
+
+  <update id="updateCount" parameterType="int">
+    update interface_counts
+    set counts = #{count}
+  </update>
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.tianshu.dao.mapper.DemandsMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.tianshu.dao.model.DemandsDO">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="delflag" column="delflag" jdbcType="INTEGER"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="provider" column="provider" jdbcType="VARCHAR"/>
+        <result property="uid" column="uid" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="district" column="district" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, description, uid, type, district, name, price
+    </sql>
+
+    <select id="getAllDemands" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+            id, description, provider, uid, type, district
+        FROM demands
+        ORDER BY id
+            LIMIT #{pageSize} OFFSET #{pageNum}
+    </select>
+
+    <select id="getQueryDemands" parameterType="com.example.tianshu.dao.model.DemandsDO" resultMap="BaseResultMap">
+        SELECT id, name, price, uid, description, district,
+        (SELECT COUNT(*) FROM demands WHERE delflag = 0
+        <if test="type != null and type != ''">
+            AND type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test="district != null and district != ''">
+            AND district LIKE CONCAT('%', #{district}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>) AS totalDemands
+        FROM demands
+        WHERE delflag = 0
+        <if test="type != null and type != ''">
+            AND type LIKE CONCAT('%', #{type}, '%')
+        </if>
+        <if test="district != null and district != ''">
+            AND district LIKE CONCAT('%', #{district}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        ORDER BY id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="getDemandById" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM demands
+        WHERE uid = #{uid} and delflag = 0
+    </select>
+
+    <insert id="insertDemand" keyColumn="id" keyProperty="id">
+        INSERT INTO demands
+            (description, provider, uid, type, district, name, price, delflag)
+        VALUES
+            (#{description}, #{provider}, #{uid}, #{type}, #{district}, #{name}, #{price},0)
+    </insert>
+
+    <update id="updateDemand">
+        UPDATE demands
+        <set>
+            <if test="description != null">description = #{description},</if>
+            <if test="provider != null">provider = #{provider},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="district != null">district = #{district},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+        </set>
+        WHERE uid = #{uid}
+    </update>
+
+    <update id="soldDemandById" parameterType="java.lang.String">
+        UPDATE demands
+        SET
+            delflag = 2
+        WHERE uid = #{uid}
+    </update>
+
+    <update id="deleteDemandById" parameterType="java.lang.String">
+        UPDATE demands
+        SET
+            delflag = 1
+        WHERE uid = #{uid}
+    </update>
+</mapper>

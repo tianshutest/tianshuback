@@ -1,0 +1,32 @@
+package com.example.tianshu.controller;
+
+import com.example.tianshu.client.ShowClient;
+import com.example.tianshu.dao.model.CostDTO;
+import com.example.tianshu.dao.model.SoldItemDTO;
+import com.example.tianshu.service.LoginService;
+import com.example.tianshu.service.ShowService;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@CrossOrigin(origins = {"http://www.tsjiaoyi.asia:10","http://wl.tsjiaoyi.asia:10","http://101.35.54.61:7531", "http://101.35.54.61:5500","http://127.0.0.1:5501","http://127.0.0.1:7531"})
+@RestController
+@RequestMapping("/show")
+public class ShowController  implements ShowClient {
+
+    @Resource
+    private ShowService showService;
+
+    @Override
+    public List<CostDTO> costQuery() {
+        return showService.getCost();
+    }
+
+    @Override
+    public List<SoldItemDTO> weeklysoldQuery() {
+        return showService.weeklysoldQuery();
+    }
+}
