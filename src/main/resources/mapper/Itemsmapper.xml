@@ -18,6 +18,7 @@
         <result property="district" column="district" jdbcType="VARCHAR"/>
         <result property="imageUrls" column="imageUrls" jdbcType="VARCHAR"/>
         <result property="realQuantity" column="realQuantity" jdbcType="INTEGER"/>
+        <result property="realPrice" column="realPrice" jdbcType="DOUBLE"/>
     </resultMap>
     <resultMap id="SoldItemResultMap" type="com.example.tianshu.dao.model.SoldItemDTO">
         <result property="district" column="district"/>
@@ -83,9 +84,9 @@
 
     <insert id="insertItem" keyColumn="id" keyProperty="id">
         INSERT INTO items
-            (name, price, item_number, imageUrls,image, type, district, remark, uid, provider, delflag, realQuantity)
+            (name, price, item_number, imageUrls,image, type, district, remark, uid, provider, delflag, realQuantity, realPrice)
         VALUES
-            (#{name}, #{price}, #{itemNumber}, #{imageUrls},#{image}, #{type}, #{district}, #{remark}, #{uid}, #{provider}, 0, #{realQuantity})
+            (#{name}, #{price}, #{itemNumber}, #{imageUrls},#{image}, #{type}, #{district}, #{remark}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
     </insert>
 
     <update id="updateItem">

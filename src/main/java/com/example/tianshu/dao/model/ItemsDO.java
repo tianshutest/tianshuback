@@ -18,4 +18,5 @@ public class ItemsDO implements Serializable {
     private String imageUrls;
     private String totalItems;
     private Integer realQuantity;
+    private Double realPrice;
 }
