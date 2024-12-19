@@ -29,9 +29,4 @@ public interface Itemsmapper extends BaseMapper<ItemsDO> {
 
     void insertsoldedItem(ItemInsertDTO itemInsertDTO);
 
-    List<SoldItemDTO> searchsoldpropbydis();
-
-    List<SoldItemDTO> searchsoldpropbytype();
-
-    salesVolumeDTO searchSales();
 }

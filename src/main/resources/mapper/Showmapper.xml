@@ -7,6 +7,13 @@
     <result property="cost"  column="cost"/>
   </resultMap>
 
+  <resultMap id="salesVolumeMap" type="com.example.tianshu.dao.model.salesVolumeDTO">
+    <result property="annualSales" column="annualSales"/>
+    <result property="historicalSales" column="historicalSales"/>
+    <result property="monthklySales" column="monthklySales"/>
+    <result property="dailySales" column="dailySales"/>
+  </resultMap>
+
   <resultMap id="SoldItemResultMap" type="com.example.tianshu.dao.model.SoldItemDTO">
     <result property="district" column="district"/>
     <result property="source" column="source"/>
@@ -15,7 +22,38 @@
     <result property="instime" column="instime"/>
     <result property="number" column="number"/>
     <result property="price" column="price"/>
+    <result property="total_sales" column="total_sales"/>
   </resultMap>
+
+  <select id="searchsoldpropbydis" resultMap="SoldItemResultMap">
+    SELECT a.district,
+           SUM(a.number * a.price) AS totalprice
+    FROM solded_item a
+    GROUP BY a.district;
+  </select>
+
+  <select id="searchsoldpropbytype" resultMap="SoldItemResultMap">
+    SELECT
+      a.source,
+      b.sourceName,
+      SUM(a.number * a.price) AS totalprice
+    FROM
+      solded_item a
+        LEFT JOIN
+      dm_source b ON a.source = b.source
+    GROUP BY
+      a.source, b.sourceName;
+  </select>
+
+
+  <select id="searchSales" resultMap="salesVolumeMap">
+    SELECT
+      SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
+      SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
+      SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) THEN number * price ELSE 0 END) AS annualSales,
+      SUM(number * price) AS historicalSales
+    FROM solded_item;
+  </select>
 
   <select id="inventoryRateQuery" resultMap="CostResultMap">
     select sum(cost) as cost from cost where source = '2'
@@ -23,11 +61,26 @@
 
   <select id="weeklysoldQuery" resultMap="SoldItemResultMap">
   <![CDATA[
-    SELECT name, price, number, instime
+    SELECT
+      name,
+      price,
+      number,
+      instime,
+      SUM(price * number) AS total_sales
     FROM solded_item
-    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY
-      AND instime < CURDATE() + INTERVAL (8 - DAYOFWEEK(CURDATE())) DAY;
+    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) - 3) DAY
+      AND instime < CURDATE() + INTERVAL (9 - DAYOFWEEK(CURDATE())) DAY
+    GROUP BY name, price, number, instime
+    order by instime;
     ]]>
 </select>
-  
+
+  <select id="monthlySalesTrendChart" resultMap="SoldItemResultMap">
+    SELECT instime, sum(price * number) as totalPrice
+    FROM solded_item
+    WHERE instime >= CURDATE() - INTERVAL 1 MONTH
+    group by instime
+    ORDER BY instime;
+</select>
+
 </mapper>

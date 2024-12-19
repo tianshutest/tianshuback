@@ -20,12 +20,7 @@
         <result property="realQuantity" column="realQuantity" jdbcType="INTEGER"/>
         <result property="realPrice" column="realPrice" jdbcType="DOUBLE"/>
     </resultMap>
-    <resultMap id="SoldItemResultMap" type="com.example.tianshu.dao.model.SoldItemDTO">
-        <result property="district" column="district"/>
-        <result property="source" column="source"/>
-        <result property="totalprice" column="totalprice"/>
-        <result property="sourceName" column="sourceName"/>
-    </resultMap>
+
     <resultMap id="salesVolumeMap" type="com.example.tianshu.dao.model.salesVolumeDTO">
         <result property="annualSales" column="annualSales"/>
         <result property="historicalSales" column="historicalSales"/>
@@ -134,32 +129,4 @@
         (#{price}, #{number}, #{uid}, #{district},#{type},#{source},#{name},#{instime})
     </insert>
 
-    <select id="searchsoldpropbydis" resultMap="SoldItemResultMap">
-        SELECT a.district,
-               SUM(a.number * a.price) AS totalprice
-        FROM solded_item a
-        GROUP BY a.district;
-    </select>
-
-    <select id="searchsoldpropbytype" resultMap="SoldItemResultMap">
-        SELECT
-            a.source,
-            b.sourceName,
-            SUM(a.number * a.price) AS totalprice
-        FROM
-            solded_item a
-                LEFT JOIN
-            dm_source b ON a.source = b.source
-        GROUP BY
-            a.source, b.sourceName;
-    </select>
-
-    <select id="searchSales" resultMap="salesVolumeMap">
-        SELECT
-            SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
-            SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
-            SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) THEN number * price ELSE 0 END) AS annualSales,
-            SUM(number * price) AS historicalSales
-        FROM solded_item;
-    </select>
 </mapper>

@@ -76,14 +76,4 @@ public class ItemsController implements ItemsClient {
         itemsService.soldItemById(uid, salesUnitPrice, saleNum, district, type, source);
         return true;
     }
-
-    @Override
-    public List<SoldItemDTO> searchsoldprop(String type) {
-        return itemsService.searchsoldprop(type);
-    }
-
-    @Override
-    public salesVolumeDTO searchSales() {
-        return itemsService.searchSales();
-    }
 }

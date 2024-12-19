@@ -16,6 +16,21 @@ public class ShowServiceImpl implements ShowService {
     private CostMapper costMapper;
 
     @Override
+    public salesVolumeDTO searchSales() {
+        return costMapper.searchSales();
+    }
+
+    @Override
+    public List<SoldItemDTO> searchsoldprop(String type) {
+        if (type.equals("1")){
+            System.out.println(costMapper.searchsoldpropbydis());
+            return costMapper.searchsoldpropbydis();
+        }else {
+            return costMapper.searchsoldpropbytype();
+        }
+    }
+
+    @Override
     public List<CostDTO> getCost() {
         return costMapper.inventoryRateQuery();
     }
@@ -23,5 +38,10 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public List<SoldItemDTO> weeklysoldQuery() {
         return costMapper.weeklysoldQuery();
+    }
+
+    @Override
+    public List<SoldItemDTO> getMonthlySales() {
+        return costMapper.monthlySalesTrendChart();
     }
 }

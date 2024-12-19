@@ -151,7 +151,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         Date sqlDate = Date.valueOf(today); // 将 LocalDate 转换为 java.sql.Date
         ItemsDTO solditemsDTO = new ItemsDTO();
         ItemInsertDTO itemInsertDTO = new ItemInsertDTO();
-        solditemsDTO.setItemNumber(itemsDO.getItemNumber());
+        solditemsDTO.setItemNumber(String.valueOf(finalNum));
         solditemsDTO.setUid(uid);
         solditemsDTO.setRealQuantity(realQuantity);
         itemInsertDTO.setUid(uid);
@@ -168,22 +168,6 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
             itemsmapper.deleteItemById(uid);
         }
     }
-
-    @Override
-    public List<SoldItemDTO> searchsoldprop(String type) {
-        if (type.equals("1")){
-            System.out.println(itemsmapper.searchsoldpropbydis());
-            return itemsmapper.searchsoldpropbydis();
-        }else {
-            return itemsmapper.searchsoldpropbytype();
-        }
-    }
-
-    @Override
-    public salesVolumeDTO searchSales() {
-        return itemsmapper.searchSales();
-    }
-
 
     public static String generateShortRandomUID() {
         // 生成一个随机的十六进制字符串

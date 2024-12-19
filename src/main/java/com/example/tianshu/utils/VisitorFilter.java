@@ -24,6 +24,10 @@ public class VisitorFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String ip = request.getRemoteAddr();
+        if ("127.0.0.1".equals(ip)) {
+            filterChain.doFilter(request, response);
+            return; // 跳过记录操作，直接执行后续过滤器链
+        }
         LocalDate date = LocalDate.now();
         Visitor visitor = visitorRepository.findByIpAndVisitDate(ip, date);
 

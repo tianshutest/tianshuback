@@ -37,9 +37,4 @@ public interface ItemsClient {
     @PostMapping ("/soldItemById")
     boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source);
 
-    @GetMapping ("/searchsoldprop")
-    List<SoldItemDTO> searchsoldprop(String type);
-
-    @GetMapping ("/searchSales")
-    salesVolumeDTO searchSales();
 }

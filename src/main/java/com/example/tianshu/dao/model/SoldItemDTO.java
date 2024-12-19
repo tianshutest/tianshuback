@@ -14,4 +14,5 @@ public class SoldItemDTO {
     private Date instime;
     private int number;
     private double price;
+    private double total_sales;
 }
