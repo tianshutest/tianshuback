@@ -67,14 +67,11 @@
             LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
-
-
-
     <select id="getItemById" parameterType="java.lang.String" resultMap="BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM items
-        WHERE uid = #{uid} and delflag = 0
+        WHERE uid = #{uid} and delflag in (0, 99)
     </select>
 
     <insert id="insertItem" keyColumn="id" keyProperty="id">

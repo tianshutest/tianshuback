@@ -3,6 +3,7 @@ package com.example.tianshu.controller;
 import com.example.tianshu.client.ShowClient;
 import com.example.tianshu.dao.model.CostDTO;
 import com.example.tianshu.dao.model.SoldItemDTO;
+import com.example.tianshu.dao.model.VisitDTO;
 import com.example.tianshu.dao.model.salesVolumeDTO;
 import com.example.tianshu.service.ShowService;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,6 +36,16 @@ public class ShowController  implements ShowClient {
     @Override
     public List<SoldItemDTO> getMonthlySales() {
         return showService.getMonthlySales();
+    }
+
+    @Override
+    public VisitDTO visitTodayNum() {
+        return showService.visitTodayNum();
+    }
+
+    @Override
+    public VisitDTO visitTotalNum() {
+        return showService.visitTotalNum();
     }
 
     @Override

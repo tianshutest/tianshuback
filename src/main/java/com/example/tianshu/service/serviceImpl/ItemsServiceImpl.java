@@ -37,6 +37,10 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         return itemsmapper.getAllItems(params);
     }
 
+    /** 分页查询所有在售道具，使用redis缓存缓解查询压力
+     * @param queryItemsDTO
+     * @return
+     */
     @Override
     public List<ItemsDO> getQueryItems(QueryItemsDTO queryItemsDTO) {
         queryItemsDTO.setPageSize(queryItemsDTO.getPageSize());
@@ -68,11 +72,20 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         return items;
     }
 
+    /** 根据道具编号查询单条道具
+     * @param uid
+     * @return
+     */
     @Override
     public ItemsDO getItemById(String uid) {
         return itemsmapper.getItemById(uid);
     }
 
+    /** 新增上架道具
+     * @param files 道具图片
+     * @param itemsDO 道具详细信息
+     * @throws IOException
+     */
     @Override
     public void insertItem(List<MultipartFile> files, ItemsDO itemsDO) throws IOException {
         ItemsDTO itemsDTO = new ItemsDTO();
@@ -111,11 +124,18 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemsmapper.insertItem(itemsDTO);
     }
 
+    /** 下架单条道具
+     * @param uid 需要删除道具的编号
+     */
     @Override
     public void deleteItemById(String uid) {
         itemsmapper.deleteItemById(uid);
     }
 
+    /** 修改道具展示图片
+     * @param file 图片
+     * @param itemsDO 道具信息
+     */
     @Override
     public void updateItem(MultipartFile file, ItemsDO itemsDO) {
         ItemsDTO itemsDTO = new ItemsDTO();
@@ -131,6 +151,9 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemsmapper.updateItem(itemsDTO);
     }
 
+    /** 更新道具信息
+     * @param itemsDO
+     */
     @Override
     public void updateInfo(ItemsDO itemsDO) {
         ItemsDTO itemsDTO = new ItemsDTO();
@@ -138,9 +161,18 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemsmapper.updateInfo(itemsDTO);
     }
 
+    /** 道具售出
+     * @param uid 道具编号
+     * @param salesUnitPrice 出售价格
+     * @param saleNum 出售数量
+     * @param district 大区
+     * @param type 道具类型
+     * @param source 道具来源
+     */
     @Override
-    public void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source) {
-        ItemsDO itemsDO = itemsmapper.getItemById(uid);
+    public void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source, String name) {
+        String uuid = uid.trim();
+        ItemsDO itemsDO = itemsmapper.getItemById(uuid);
         //获得销售后的真实数量
         int realQuantity = itemsDO.getRealQuantity() - saleNum;
         //获得前台展示的数量
@@ -152,15 +184,15 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         ItemsDTO solditemsDTO = new ItemsDTO();
         ItemInsertDTO itemInsertDTO = new ItemInsertDTO();
         solditemsDTO.setItemNumber(String.valueOf(finalNum));
-        solditemsDTO.setUid(uid);
+        solditemsDTO.setUid(uuid);
         solditemsDTO.setRealQuantity(realQuantity);
-        itemInsertDTO.setUid(uid);
+        itemInsertDTO.setUid(uuid);
         itemInsertDTO.setDistrict(district);
         itemInsertDTO.setNumber(saleNum);
         itemInsertDTO.setPrice(salesUnitPrice);
         itemInsertDTO.setSource(source);
         itemInsertDTO.setType(type);
-        itemInsertDTO.setName(itemsDO.getName());
+        itemInsertDTO.setName(name);
         itemInsertDTO.setInstime(sqlDate);
         itemsmapper.soldItemById(solditemsDTO);
         itemsmapper.insertsoldedItem(itemInsertDTO);
@@ -169,6 +201,9 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         }
     }
 
+    /** 随机生成八位数
+     * @return
+     */
     public static String generateShortRandomUID() {
         // 生成一个随机的十六进制字符串
         String randomHex = Integer.toHexString(new Random().nextInt(0xFFFFFF));
@@ -179,6 +214,12 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         return randomHex;
     }
 
+    /** 将图片保存到本地
+     * @param file 传入图片
+     * @param directoryPath 保存到本地地址
+     * @return
+     * @throws IOException
+     */
     public static String saveImageToLocalDirectory(MultipartFile file, String directoryPath) throws IOException {
         String originalFilename = file.getOriginalFilename();
         String fileExtension = "";

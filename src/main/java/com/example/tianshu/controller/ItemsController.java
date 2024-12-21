@@ -72,8 +72,8 @@ public class ItemsController implements ItemsClient {
 
 
     @Override
-    public boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source) {
-        itemsService.soldItemById(uid, salesUnitPrice, saleNum, district, type, source);
+    public boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source ,String name) {
+        itemsService.soldItemById(uid, salesUnitPrice, saleNum, district, type, source, name);
         return true;
     }
 }
