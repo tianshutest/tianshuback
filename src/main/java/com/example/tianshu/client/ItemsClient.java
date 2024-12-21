@@ -2,6 +2,8 @@ package com.example.tianshu.client;
 
 import com.example.tianshu.dao.model.ItemsDO;
 import com.example.tianshu.dao.model.QueryItemsDTO;
+import com.example.tianshu.dao.model.SoldItemDTO;
+import com.example.tianshu.dao.model.salesVolumeDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
