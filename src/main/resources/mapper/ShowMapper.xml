@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.tianshu.dao.mapper.CostMapper">
+<mapper namespace="com.example.tianshu.dao.mapper.ShowMapper">
   <resultMap id="CostResultMap" type="com.example.tianshu.dao.model.CostDTO">
     <result property="district"  column="district"/>
     <result property="source"  column="source"/>
@@ -23,6 +23,11 @@
     <result property="number" column="number"/>
     <result property="price" column="price"/>
     <result property="total_sales" column="total_sales"/>
+  </resultMap>
+
+  <resultMap id="VisitorResultMap" type="com.example.tianshu.dao.model.VisitDTO">
+    <result property="visitNum" column="visitNum"/>
+    <result property="visitPeopleNum" column="visitPeopleNum"/>
   </resultMap>
 
   <select id="searchsoldpropbydis" resultMap="SoldItemResultMap">
@@ -81,6 +86,15 @@
     WHERE instime >= CURDATE() - INTERVAL 1 MONTH
     group by instime
     ORDER BY instime;
+</select>
+
+<select id="visitTodayNum" resultMap="VisitorResultMap">
+  SELECT count(ip) as visitPeopleNum,SUM(visit_count) as visitNum FROM visitor
+  WHERE DATE(visit_date) = CURDATE();
+</select>
+
+<select id="visitTotalNum" resultMap="VisitorResultMap">
+    SELECT count(ip) as visitPeopleNum,SUM(visit_count) as visitNum FROM visitor
 </select>
 
 </mapper>

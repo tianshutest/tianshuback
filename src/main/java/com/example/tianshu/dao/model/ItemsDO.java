@@ -3,6 +3,9 @@ package com.example.tianshu.dao.model;
 import lombok.Data;
 import java.io.Serializable;
 
+/**
+ * 商品道具信息
+ */
 @Data
 public class ItemsDO implements Serializable {
     private Long id;

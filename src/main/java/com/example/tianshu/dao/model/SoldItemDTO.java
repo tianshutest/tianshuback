@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * 出售道具信息
+ */
 @Data
 public class SoldItemDTO {
     private String district;

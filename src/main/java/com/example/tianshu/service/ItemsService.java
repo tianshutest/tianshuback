@@ -1,10 +1,7 @@
 package com.example.tianshu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.tianshu.dao.model.ItemsDO;
-import com.example.tianshu.dao.model.QueryItemsDTO;
-import com.example.tianshu.dao.model.SoldItemDTO;
-import com.example.tianshu.dao.model.salesVolumeDTO;
+import com.example.tianshu.dao.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -28,5 +25,5 @@ public interface ItemsService extends IService<ItemsDO>{
 
     void updateInfo(ItemsDO itemsDO);
 
-    void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source);
+    void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source,String name);
 }

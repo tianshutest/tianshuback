@@ -2,6 +2,7 @@ package com.example.tianshu.service;
 
 import com.example.tianshu.dao.model.CostDTO;
 import com.example.tianshu.dao.model.SoldItemDTO;
+import com.example.tianshu.dao.model.VisitDTO;
 import com.example.tianshu.dao.model.salesVolumeDTO;
 
 import java.util.List;
@@ -17,4 +18,8 @@ public interface ShowService {
     List<SoldItemDTO> weeklysoldQuery();
 
     List<SoldItemDTO> getMonthlySales();
+
+    VisitDTO visitTodayNum();
+
+    VisitDTO visitTotalNum();
 }

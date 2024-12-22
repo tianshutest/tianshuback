@@ -9,6 +9,9 @@ import javax.persistence.UniqueConstraint;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * 记录用户的访问时间/次数/地址
+ */
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"ip", "visitDate"})})
 public class Visitor {

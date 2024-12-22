@@ -3,13 +3,14 @@ package com.example.tianshu.dao.mapper;
 
 import com.example.tianshu.dao.model.CostDTO;
 import com.example.tianshu.dao.model.SoldItemDTO;
+import com.example.tianshu.dao.model.VisitDTO;
 import com.example.tianshu.dao.model.salesVolumeDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
 @Mapper
-public interface CostMapper{
+public interface ShowMapper {
 
     salesVolumeDTO searchSales();
 
@@ -22,4 +23,8 @@ public interface CostMapper{
     List<SoldItemDTO> weeklysoldQuery();
 
     List<SoldItemDTO> monthlySalesTrendChart();
+
+    VisitDTO visitTodayNum();
+
+    VisitDTO visitTotalNum();
 }
