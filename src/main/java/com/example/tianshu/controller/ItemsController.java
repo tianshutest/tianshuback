@@ -3,8 +3,6 @@ package com.example.tianshu.controller;
 import com.example.tianshu.client.ItemsClient;
 import com.example.tianshu.dao.model.ItemsDO;
 import com.example.tianshu.dao.model.QueryItemsDTO;
-import com.example.tianshu.dao.model.SoldItemDTO;
-import com.example.tianshu.dao.model.salesVolumeDTO;
 import com.example.tianshu.service.ItemsService;
 import org.apache.ibatis.annotations.Param;
 import org.jboss.logging.Logger;

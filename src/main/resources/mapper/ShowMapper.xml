@@ -73,8 +73,8 @@
       instime,
       SUM(price * number) AS total_sales
     FROM solded_item
-    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) - 3) DAY
-      AND instime < CURDATE() + INTERVAL (9 - DAYOFWEEK(CURDATE())) DAY
+    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) + 5) DAY
+      AND instime < CURDATE() + INTERVAL (1 - DAYOFWEEK(CURDATE())) DAY
     GROUP BY name, price, number, instime
     order by instime;
     ]]>

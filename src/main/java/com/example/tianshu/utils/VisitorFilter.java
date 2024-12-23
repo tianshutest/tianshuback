@@ -1,72 +1,77 @@
 package com.example.tianshu.utils;
 
-import com.example.tianshu.dao.model.Visitor;
-import com.example.tianshu.service.VisitorRepository;
+import com.example.tianshu.dao.model.InterfaceCountsDTO;
+import com.example.tianshu.service.InterfaceCountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 
 @Component
 public class VisitorFilter extends OncePerRequestFilter {
 
+    private static final long VISIT_INTERVAL = 3;  // 3 seconds
+    private final Map<String, Lock> ipLocks = new ConcurrentHashMap<>();
+
+
     @Autowired
-    private VisitorRepository visitorRepository;
+    private InterfaceCountService interfaceCountService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         // 获取真实的客户端IP地址
-        String ip = getClientIp(request);
+        String clientIp = getClientIp(request);
+        InterfaceCountsDTO interfaceCountsDTO = new InterfaceCountsDTO();
+        interfaceCountsDTO.setIp(clientIp);
+        interfaceCountsDTO.setVisitDate(LocalDate.now());
+        LocalDateTime currentTime = LocalDateTime.now();
+        Lock lock = ipLocks.computeIfAbsent(clientIp, k -> new ReentrantLock());
+        lock.lock();  // 获取锁
 
-        LocalDate date = LocalDate.now();
-        try{
         // 查找当天访问记录
-        Visitor visitor = visitorRepository.findByIpAndVisitDate(ip, date);
+        InterfaceCountsDTO interfaceCountsDTOS = interfaceCountService.findByIpAndVisitDate(interfaceCountsDTO);
 
-        if ("127.0.0.1".equals(ip)) {
-            filterChain.doFilter(request, response);
-            return; // 跳过记录操作，直接执行后续过滤器链
-        }
+        try {
+            // 获取当天访问记录
+            InterfaceCountsDTO interfaceCounts = new InterfaceCountsDTO();
+            interfaceCounts.setIp(clientIp);
+            interfaceCounts.setVisitDate(LocalDate.now());
 
-        synchronized (this) {
-            if (visitor == null) {
+            LocalDateTime lastVisitTime = interfaceCountsDTOS != null ? interfaceCountsDTOS.getLastVisitTime() : null;
+
+            if (interfaceCountsDTOS == null) {
                 // 如果当天没有记录，创建新的记录
-                visitor = new Visitor();
-                visitor.setIp(ip);
-                visitor.setVisitCount(1L);
-                visitor.setVisitDate(date);
-            } else {
-                // 如果已有记录，则更新访问计数
-                visitor.setVisitCount(visitor.getVisitCount() + 1);
+                interfaceCounts.setVisitCount(1);
+                interfaceCounts.setLastVisitTime(currentTime);
+                interfaceCountService.insertVisit(interfaceCounts);
+            } else if (Duration.between(lastVisitTime, currentTime).getSeconds() > VISIT_INTERVAL) {
+                // 如果有记录并且超过时间间隔，更新访问数据
+                interfaceCountsDTO.setId(interfaceCountsDTOS.getId());
+                interfaceCountsDTO.setVisitCount(interfaceCountsDTOS.getVisitCount() + 1);
+                interfaceCountsDTO.setLastVisitTime(currentTime);
+                interfaceCountService.updateVisit(interfaceCountsDTO);
             }
+        } finally {
+            lock.unlock();  // 释放锁
         }
-
-        // 更新最后访问时间
-        visitor.setLastVisitTime(LocalDateTime.now());
-
-        // 尝试保存，捕获异常并更新记录
-            visitorRepository.saveAndFlush(visitor);  // 使用saveAndFlush确保数据立即提交
-
-            // 发生唯一约束冲突，表示记录已存在，执行更新操作
-            // 继续执行后续操作，确保即使发生冲突也不阻止访问
-            visitor = visitorRepository.findByIpAndVisitDate(ip, date);
-            if (visitor != null) {
-                visitor.setVisitCount(visitor.getVisitCount() + 1);
-                visitorRepository.saveAndFlush(visitor);  // 强制提交更新
-            }
-        } catch (IOException e) {
-            filterChain.doFilter(request, response);
-            return; // 跳过记录操作，直接执行后续过滤器链
-        }
+//        interfaceCounts.setVisitCount(interfaceCountsDTOS.getVisitCount() + 1);
+//        // 更新最后访问时间
+//        interfaceCountsDTO.setLastVisitTime(LocalDateTime.now());
 
         // 继续执行后续过滤器链，允许正常访问页面
         filterChain.doFilter(request, response);
