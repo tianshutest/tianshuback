@@ -23,7 +23,6 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public List<SoldItemDTO> searchsoldprop(String type) {
         if (type.equals("1")){
-            System.out.println(showMapper.searchsoldpropbydis());
             return showMapper.searchsoldpropbydis();
         }else {
             return showMapper.searchsoldpropbytype();
@@ -53,5 +52,35 @@ public class ShowServiceImpl implements ShowService {
     @Override
     public VisitDTO visitTotalNum() {
         return showMapper.visitTotalNum();
+    }
+
+    @Override
+    public Double searchsoldByYearta() {
+        return showMapper.searchsoldByYearta();
+    }
+
+    @Override
+    public List<String> searchtaInventoryRate() {
+        List<String> list = new ArrayList<>();
+        double remaining = showMapper.searchsoldremaining();
+        double inventory = showMapper.searchsoldByYearta();
+        double cost = showMapper.searchsoldedtacost();
+        double profit = inventory + remaining - cost;
+        double profitRate = profit / cost;
+        String formattedProfit = String.format("%.2f", profit);
+        String formattedProfitRate = String.format("%.2f", profitRate * 100);
+        list.add(formattedProfit);
+        list.add(formattedProfitRate);
+        return list;
+    }
+
+    @Override
+    public List<SoldItemDTO> searchsoldednumber() {
+        return showMapper.searchsoldednumber();
+    }
+
+    @Override
+    public List<SoldItemDTO> searchsoldedByMonth() {
+        return showMapper.searchsoldedByMonth();
     }
 }

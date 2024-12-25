@@ -22,4 +22,12 @@ public interface ShowService {
     VisitDTO visitTodayNum();
 
     VisitDTO visitTotalNum();
+
+    Double searchsoldByYearta();
+
+    List<String> searchtaInventoryRate();
+
+    List<SoldItemDTO> searchsoldednumber();
+
+    List<SoldItemDTO> searchsoldedByMonth();
 }

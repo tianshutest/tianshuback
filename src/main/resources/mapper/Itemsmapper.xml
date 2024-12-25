@@ -19,6 +19,7 @@
         <result property="imageUrls" column="imageUrls" jdbcType="VARCHAR"/>
         <result property="realQuantity" column="realQuantity" jdbcType="INTEGER"/>
         <result property="realPrice" column="realPrice" jdbcType="DOUBLE"/>
+        <result property="soldedNum" column="soldedNum" jdbcType="INTEGER"/>
     </resultMap>
 
     <resultMap id="salesVolumeMap" type="com.example.tianshu.dao.model.salesVolumeDTO">
@@ -41,8 +42,8 @@
     </select>
 
     <select id="getQueryItems" parameterType="com.example.tianshu.dao.model.QueryItemsDTO" resultMap="BaseResultMap">
-        SELECT id, name, price, image, item_number, uid, remark, district, imageUrls,
-            (SELECT COUNT(*) FROM items WHERE delflag = 0
+        SELECT a.id,a.NAME,a.price,a.image,a.item_number,a.uid,a.remark,a.district,a.imageUrls,a.delflag,b.soldedNum,
+            (SELECT COUNT(*) FROM items WHERE delflag in (0, 2)
             <if test="type != null and type != ''">
                 AND type LIKE CONCAT('%', #{type}, '%')
             </if>
@@ -52,8 +53,9 @@
             <if test="name != null and name != ''">
                 AND name LIKE CONCAT('%', #{name}, '%')
             </if>) AS totalItems
-            FROM items
-            WHERE delflag = 0
+            FROM items a left join view_soldednum b on a.uid = b.uid
+            LEFT JOIN items_2024ta c ON a.uid = c.uid
+            WHERE a.delflag in (0, 2)
             <if test="type != null and type != ''">
                 AND type LIKE CONCAT('%', #{type}, '%')
             </if>
@@ -63,7 +65,11 @@
             <if test="name != null and name != ''">
                 AND name LIKE CONCAT('%', #{name}, '%')
             </if>
-            ORDER BY id DESC
+            ORDER BY
+            CASE
+                WHEN a.delflag = 0 THEN 0 ELSE 1
+            END,
+            c.realQuantity DESC
             LIMIT #{pageSize} OFFSET #{offset}
     </select>
 

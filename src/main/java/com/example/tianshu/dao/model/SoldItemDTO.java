@@ -9,6 +9,7 @@ import java.time.LocalDate;
  */
 @Data
 public class SoldItemDTO {
+    private String uid;
     private String district;
     private Double totalprice;
     private Integer source;
@@ -18,4 +19,5 @@ public class SoldItemDTO {
     private int number;
     private double price;
     private double total_sales;
+    private String month;
 }

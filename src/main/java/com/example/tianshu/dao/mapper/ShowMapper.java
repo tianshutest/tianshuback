@@ -27,4 +27,14 @@ public interface ShowMapper {
     VisitDTO visitTodayNum();
 
     VisitDTO visitTotalNum();
+
+    Double searchsoldByYearta();
+
+    Double searchsoldremaining();
+
+    Double searchsoldedtacost();
+
+    List<SoldItemDTO> searchsoldednumber();
+
+    List<SoldItemDTO> searchsoldedByMonth();
 }

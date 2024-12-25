@@ -23,4 +23,5 @@ public class ItemsDO implements Serializable {
     private Integer realQuantity;
     private Double realPrice;
     private Integer delflag;
+    private Integer soldedNum;
 }

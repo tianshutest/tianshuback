@@ -52,4 +52,16 @@ public interface ShowClient {
      */
     @GetMapping("/visitTotalNum")
     VisitDTO visitTotalNum();
+
+    @GetMapping("/searchsoldByYearta")
+    Double searchsoldByYearta();
+
+    @GetMapping("/searchtaInventoryRate")
+    List<String> searchtaInventoryRate();
+
+    @GetMapping("/searchsoldednumber")
+    List<SoldItemDTO> searchsoldednumber();
+
+    @GetMapping("/searchsoldedByMonth")
+    List<SoldItemDTO> searchsoldedByMonth();
 }

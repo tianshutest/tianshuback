@@ -22,6 +22,8 @@
     <result property="instime" column="instime"/>
     <result property="number" column="number"/>
     <result property="price" column="price"/>
+    <result property="uid" column="uid"/>
+    <result property="month" column="month"/>
     <result property="total_sales" column="total_sales"/>
   </resultMap>
 
@@ -46,6 +48,7 @@
       solded_item a
         LEFT JOIN
       dm_source b ON a.source = b.source
+    where a.source not in (98,99)
     GROUP BY
       a.source, b.sourceName;
   </select>
@@ -73,8 +76,8 @@
       instime,
       SUM(price * number) AS total_sales
     FROM solded_item
-    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) + 5) DAY
-      AND instime < CURDATE() + INTERVAL (1 - DAYOFWEEK(CURDATE())) DAY
+    WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) -2) DAY
+      AND instime < CURDATE() + INTERVAL (8 - DAYOFWEEK(CURDATE())) DAY
     GROUP BY name, price, number, instime
     order by instime;
     ]]>
@@ -95,6 +98,38 @@
 
 <select id="visitTotalNum" resultMap="VisitorResultMap">
     SELECT count(ip) as visitPeopleNum,SUM(visit_count) as visitNum FROM visitor
+</select>
+
+<select id="searchsoldByYearta" resultType="java.lang.Double">
+    SELECT SUM(a.number * a.price) FROM solded_item a WHERE a.source = 2;
+</select>
+
+<select id="searchsoldremaining" resultType="java.lang.Double">
+    SELECT ROUND(SUM(a.realPrice * a.realQuantity), 2) AS total_price
+    FROM items_2024ta a;
+</select>
+
+<select id="searchsoldedtacost" resultType="java.lang.Double">
+    select sum(cost) from cost where source = 2
+</select>
+
+<select id="searchsoldednumber" resultMap="SoldItemResultMap">
+    SELECT uid, SUM(number) as number
+    FROM solded_item
+    WHERE source = 2
+    GROUP BY uid;
+</select>
+
+<select id="searchsoldedByMonth" resultMap="SoldItemResultMap">
+  SELECT
+    DATE_FORMAT(instime, '%m') AS month,
+    ROUND(SUM(CAST(price AS DECIMAL(10, 2)) * CAST(number AS DECIMAL(10, 2))), 1) AS totalprice
+  FROM
+    solded_item
+  GROUP BY
+    month
+  ORDER BY
+    month;
 </select>
 
 </mapper>

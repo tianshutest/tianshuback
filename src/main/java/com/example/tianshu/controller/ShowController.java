@@ -49,6 +49,26 @@ public class ShowController  implements ShowClient {
     }
 
     @Override
+    public Double searchsoldByYearta() {
+        return showService.searchsoldByYearta();
+    }
+
+    @Override
+    public List<String> searchtaInventoryRate() {
+        return showService.searchtaInventoryRate();
+    }
+
+    @Override
+    public List<SoldItemDTO> searchsoldednumber() {
+        return showService.searchsoldednumber();
+    }
+
+    @Override
+    public List<SoldItemDTO> searchsoldedByMonth() {
+        return showService.searchsoldedByMonth();
+    }
+
+    @Override
     public List<SoldItemDTO> searchsoldprop(String type) {
         return showService.searchsoldprop(type);
     }
