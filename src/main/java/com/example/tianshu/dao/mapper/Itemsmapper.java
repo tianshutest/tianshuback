@@ -29,4 +29,13 @@ public interface Itemsmapper extends BaseMapper<ItemsDO> {
 
     void insertsoldedItem(ItemInsertDTO itemInsertDTO);
 
+    void soldItemBytableById(Map<String, Object> params);
+
+    ItemsDO selectsoldItemBytableById(Map<String, Object> params);
+
+    void insertsoldPartItem(ItemsDTO solditemsDTO);
+
+    boolean addNumById(Map<String, Object> params);
+
+    boolean addParyNumById(Map<String, Object> params);
 }

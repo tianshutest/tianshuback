@@ -9,7 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-@CrossOrigin(origins = {"http://www.tsjiaoyi.asia:10","http://101.35.54.61:7531","http://wl.tsjiaoyi.asia:10", "http://127.0.0.1:5501","http://localhost:7531","http://127.0.0.1:7531"})
+@CrossOrigin(origins = {"http://www.tsjiaoyi.asia:10","http://101.35.54.61:7531","http://wl.tsjiaoyi.asia:10",
+        "http://127.0.0.1:5501","http://localhost:7531","http://127.0.0.1:7531", "http://localhost:8080", "http://127.0.0.1:8080"})
 public interface ItemsClient {
 
     @GetMapping("/getAllItems")
@@ -70,6 +71,17 @@ public interface ItemsClient {
      * @return
      */
     @PostMapping ("/soldItemById")
-    boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source, String name);
+    boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source, String name, String saleDate);
 
+
+    /** 对已有道具数量的新增
+     * @param uid 出售道具uid
+     * @param saleNum 出售数量
+     * @param district 大区
+     * @param type 道具类型
+     * @param source 货源
+     * @return
+     */
+    @PostMapping ("/addNumById")
+    boolean addNumById(String uid,  Integer saleNum, String district, String type, Integer source, String name);
 }

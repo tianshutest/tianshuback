@@ -70,6 +70,7 @@
   <select id="weeklysoldQuery" resultMap="SoldItemResultMap">
   <![CDATA[
     SELECT
+      id,
       name,
       price,
       number,
@@ -78,7 +79,7 @@
     FROM solded_item
     WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) -2) DAY
       AND instime < CURDATE() + INTERVAL (8 - DAYOFWEEK(CURDATE())) DAY
-    GROUP BY name, price, number, instime
+    GROUP BY id,name, price, number, instime
     order by instime;
     ]]>
 </select>

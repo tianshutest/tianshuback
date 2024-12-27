@@ -12,6 +12,7 @@
         <result property="image" column="image" jdbcType="VARCHAR"/>
         <result property="delflag" column="delflag" jdbcType="INTEGER"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="source" column="source" jdbcType="VARCHAR"/>
         <result property="provider" column="provider" jdbcType="VARCHAR"/>
         <result property="uid" column="uid" jdbcType="VARCHAR"/>
         <result property="type" column="type" jdbcType="VARCHAR"/>
@@ -45,25 +46,25 @@
         SELECT a.id,a.NAME,a.price,a.image,a.item_number,a.uid,a.remark,a.district,a.imageUrls,a.delflag,b.soldedNum,
             (SELECT COUNT(*) FROM items WHERE delflag in (0, 2)
             <if test="type != null and type != ''">
-                AND type LIKE CONCAT('%', #{type}, '%')
+                AND a.type LIKE CONCAT('%', #{type}, '%')
             </if>
             <if test="district != null and district != ''">
-                AND district LIKE CONCAT('%', #{district}, '%')
+                AND a.district LIKE CONCAT('%', #{district}, '%')
             </if>
             <if test="name != null and name != ''">
-                AND name LIKE CONCAT('%', #{name}, '%')
+                AND a.name LIKE CONCAT('%', #{name}, '%')
             </if>) AS totalItems
             FROM items a left join view_soldednum b on a.uid = b.uid
             LEFT JOIN items_2024ta c ON a.uid = c.uid
             WHERE a.delflag in (0, 2)
             <if test="type != null and type != ''">
-                AND type LIKE CONCAT('%', #{type}, '%')
+                AND a.type LIKE CONCAT('%', #{type}, '%')
             </if>
             <if test="district != null and district != ''">
-                AND district LIKE CONCAT('%', #{district}, '%')
+                AND a.district LIKE CONCAT('%', #{district}, '%')
             </if>
             <if test="name != null and name != ''">
-                AND name LIKE CONCAT('%', #{name}, '%')
+                AND a.name LIKE CONCAT('%', #{name}, '%')
             </if>
             ORDER BY
             CASE
@@ -131,5 +132,100 @@
         VALUES
         (#{price}, #{number}, #{uid}, #{district},#{type},#{source},#{name},#{instime})
     </insert>
+
+
+<update id="soldItemBytableById" parameterType="map">
+    <choose>
+        <when test="source == 1">
+            UPDATE items_warehouse
+            <set>
+                realQuantity = #{realQuantity}
+            </set>
+            WHERE uid = #{uid}
+        </when>
+        <when test="source == 2">
+            UPDATE items_2024ta
+            <set>
+                realQuantity = #{realQuantity}
+            </set>
+            WHERE uid = #{uid}
+        </when>
+        <when test="source == 3">
+            UPDATE items_11jin
+            <set>
+                realQuantity = #{realQuantity}
+            </set>
+            WHERE uid = #{uid}
+        </when>
+    </choose>
+</update>
+
+<select id="selectsoldItemBytableById" parameterType="map" resultMap="BaseResultMap">
+    <choose>
+        <when test="source == 1">
+            SELECT uid,name,delflag,realQuantity,realPrice FROM items_warehouse WHERE uid = #{uid}
+        </when>
+        <when test="source == 2">
+            SELECT uid,name,delflag,realQuantity,realPrice FROM items_2024ta WHERE uid = #{uid}
+        </when>
+        <when test="source == 3">
+            SELECT uid,name,delflag,realQuantity,realPrice FROM items_11jin WHERE uid = #{uid}
+        </when>
+    </choose>
+</select>
+
+<insert id="insertsoldPartItem"  keyColumn="id" keyProperty="id">
+    <choose>
+        <when test="source == 1">
+            INSERT INTO items_warehouse
+            (name, type, district, uid, provider, delflag, realQuantity, realPrice)
+            VALUES
+            (#{name},  #{type}, #{district}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
+        </when>
+        <when test="source == 2">
+            INSERT INTO items_2024ta
+            (name, type, district, uid, provider, delflag, realQuantity, realPrice)
+            VALUES
+            (#{name},  #{type}, #{district}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
+        </when>
+        <when test="source == 3">
+            INSERT INTO items_11jin
+            (name, type, district, uid, provider, delflag, realQuantity, realPrice)
+            VALUES
+            (#{name},  #{type}, #{district}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
+        </when>
+    </choose>
+</insert>
+
+<update id="addNumById" parameterType="map">
+    UPDATE items
+    <set>
+        realQuantity = #{realQuantity}, item_number = #{itemNumber}
+    </set>
+    WHERE uid = #{uid}
+</update>
+
+<insert id="addParyNumById" parameterType="map">
+    <choose>
+        <when test="addSource == 1">
+            INSERT INTO items_warehouse (uid, realQuantity, district, type, name)
+            VALUES (#{uid}, #{realQuantity}, #{district}, #{type}, #{name})
+            ON DUPLICATE KEY UPDATE
+            realquantity = VALUES(realQuantity);
+        </when>
+        <when test="addSource == 2">
+            INSERT INTO items_2024ta (uid, realQuantity, district, type, name)
+            VALUES (#{uid}, #{realQuantity}, #{district}, #{type}, #{name})
+            ON DUPLICATE KEY UPDATE
+            realquantity = VALUES(realQuantity);
+        </when>
+        <when test="addSource == 3">
+            INSERT INTO items_11jin (uid, realQuantity, district, type, name)
+            VALUES (#{uid}, #{realQuantity}, #{district}, #{type}, #{name})
+            ON DUPLICATE KEY UPDATE
+            realquantity = VALUES(realQuantity);
+        </when>
+    </choose>
+</insert>
 
 </mapper>

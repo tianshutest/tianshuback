@@ -17,7 +17,8 @@ import java.util.Map;
 
 
 @RestController
-@CrossOrigin(origins = {"http://www.tsjiaoyi.asia:10","http://101.35.54.61:7531","http://wl.tsjiaoyi.asia:10", "http://127.0.0.1:5501","http://localhost:7531","http://127.0.0.1:7531"})
+@CrossOrigin(origins = {"http://www.tsjiaoyi.asia:10","http://101.35.54.61:7531","http://wl.tsjiaoyi.asia:10",
+        "http://127.0.0.1:5501","http://localhost:7531","http://127.0.0.1:7531", "http://localhost:8080", "http://127.0.0.1:8080"})
 @RequestMapping("/tianshu/items")
 public class ItemsController implements ItemsClient {
     @Resource
@@ -70,8 +71,13 @@ public class ItemsController implements ItemsClient {
 
 
     @Override
-    public boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source ,String name) {
-        itemsService.soldItemById(uid, salesUnitPrice, saleNum, district, type, source, name);
+    public boolean soldItem(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source ,String name, String saleDate) {
+        itemsService.soldItemById(uid, salesUnitPrice, saleNum, district, type, source, name, saleDate);
         return true;
+    }
+
+    @Override
+    public boolean addNumById(String uid, Integer saleNum, String district, String type, Integer source, String name) {
+        return itemsService.addNumById(uid, saleNum, district, type, source, name);
     }
 }

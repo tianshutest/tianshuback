@@ -25,5 +25,7 @@ public interface ItemsService extends IService<ItemsDO>{
 
     void updateInfo(ItemsDO itemsDO);
 
-    void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source,String name);
+    void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source,String name, String saleDate);
+
+    boolean addNumById(String uid,  Integer saleNum, String district, String type, Integer source, String name);
 }

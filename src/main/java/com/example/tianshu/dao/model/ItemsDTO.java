@@ -19,6 +19,7 @@ public class ItemsDTO implements Serializable {
     private String imageUrls;
     private String totalItems;
     private Integer realQuantity;
+    private Integer source;
     private Double realPrice;
     private Integer delflag;
 }

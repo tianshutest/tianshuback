@@ -21,5 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://127.0.0.1:7531")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:8081")  // 允许来自 localhost:8080 的请求
+                .allowedMethods("GET", "POST", "PUT", "DELETE")  // 允许的请求方式
+                .allowedHeaders("*")  // 允许的请求头
+                .allowCredentials(true)  // 是否允许发送凭证
+                .maxAge(3600);  // 预检请求的有效时间（秒）
     }
 }

@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.io.File;
@@ -86,6 +87,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
      * @param itemsDO 道具详细信息
      * @throws IOException
      */
+    @Transactional
     @Override
     public void insertItem(List<MultipartFile> files, ItemsDO itemsDO) throws IOException {
         ItemsDTO itemsDTO = new ItemsDTO();
@@ -122,6 +124,10 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         }
         // 调用 MyBatis 的插入方法
         itemsmapper.insertItem(itemsDTO);
+        Integer soldedsource = itemsDO.getSource();
+        if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3)) {
+            insertsoldPartItem(itemsDTO);
+        }
     }
 
     /** 下架单条道具
@@ -161,7 +167,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemsmapper.updateInfo(itemsDTO);
     }
 
-    /** 道具售出
+    /** 道具售出  1.先计算总表itemsnumber是否需要修改，再对realquantity进行修改
+     * 2.修改完总表数量之后，再对分表进行数量修改  3.删完如果realquantity <= 0 则调用道具下架功能
      * @param uid 道具编号
      * @param salesUnitPrice 出售价格
      * @param saleNum 出售数量
@@ -170,7 +177,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
      * @param source 道具来源
      */
     @Override
-    public void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source, String name) {
+    @Transactional
+    public void soldItemById(String uid, Double salesUnitPrice, Integer saleNum, String district, String type, Integer source, String name, String saleDate) {
         String uuid = uid.trim();
         ItemsDO itemsDO = itemsmapper.getItemById(uuid);
         //获得销售后的真实数量
@@ -179,10 +187,10 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         int number = Integer.parseInt(itemsDO.getItemNumber().replaceAll("[^0-9]", ""));
         //如果售后真实数量>前台展示的数量 ， 则依旧显示前台数量
         int finalNum = (realQuantity > number) ? number : realQuantity;
-        LocalDate today = LocalDate.now(); // 获取今天的日期
-        Date sqlDate = Date.valueOf(today); // 将 LocalDate 转换为 java.sql.Date
+        Integer soldedsource = source;
         ItemsDTO solditemsDTO = new ItemsDTO();
         ItemInsertDTO itemInsertDTO = new ItemInsertDTO();
+        Map<String, Object> params = new HashMap<>();
         solditemsDTO.setItemNumber(String.valueOf(finalNum));
         solditemsDTO.setUid(uuid);
         solditemsDTO.setRealQuantity(realQuantity);
@@ -193,12 +201,52 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemInsertDTO.setSource(source);
         itemInsertDTO.setType(type);
         itemInsertDTO.setName(name);
-        itemInsertDTO.setInstime(sqlDate);
+        itemInsertDTO.setInstime(Date.valueOf(saleDate));
         itemsmapper.soldItemById(solditemsDTO);
+        if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3)) {
+            params.put("uid", uuid);
+            params.put("source", soldedsource); // 直接使用 soldedsource (假设是 Integer 类型)
+            soldPartItem(params, uuid, saleNum);
+        }
         itemsmapper.insertsoldedItem(itemInsertDTO);
         if (finalNum <= 0){
             itemsmapper.deleteItemById(uid);
         }
+    }
+
+    /** 道具数量新增 1.先增总表数量  2.增加分表数量  3.事务原子性
+     * @param uid 道具编号
+     * @param saleNum 增加数量
+     * @param district 大区
+     * @param type 道具类型
+     * @param source 道具货源
+     * @param name 道具名字
+     * @return
+     */
+    @Override
+    @Transactional
+    public boolean addNumById(String uid, Integer saleNum, String district, String type, Integer source, String name) {
+        ItemsDO itemsDO = itemsmapper.getItemById(uid);
+        Integer itemNumber = Integer.valueOf(itemsDO.getItemNumber().replaceAll("[^0-9]", ""));
+        Integer realQuantity = itemsDO.getRealQuantity() + saleNum;
+        String finalNum = String.valueOf((realQuantity > itemNumber) ? itemNumber : realQuantity);
+        Map<String, Object> addNum = new HashMap<>();
+        addNum.put("itemNumber", finalNum);
+        addNum.put("realQuantity", realQuantity);
+        addNum.put("uid", uid);
+        itemsmapper.addNumById(addNum);
+        Integer addSource = source;
+        if (addSource.equals(1) || addSource.equals(2) || addSource.equals(3)) {
+            Map<String, Object> addPartNum = new HashMap<>();
+            addPartNum.put("uid", uid);
+            addPartNum.put("realQuantity", realQuantity);
+            addPartNum.put("district", district);
+            addPartNum.put("type", type);
+            addPartNum.put("addSource", addSource);
+            addPartNum.put("name", name);
+            itemsmapper.addParyNumById(addPartNum);
+        }
+        return true;
     }
 
     /** 随机生成八位数
@@ -250,4 +298,29 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
             redisTemplate.delete(redisKey);
         }, 1, TimeUnit.SECONDS);  // 延迟 1 秒
     }
+
+    public void soldPartItem(Map<String, Object> params, String uuid, int saleNum) {
+        // 查询商品信息
+        ItemsDO itemsDO1 = itemsmapper.selectsoldItemBytableById(params);
+        Map<String, Object> partSold = new HashMap<>();
+        // 计算销售后剩余数量
+        int realPartQuantity = itemsDO1.getRealQuantity() - saleNum;
+        // 设置新的商品信息
+        partSold.put("uid", params.get("uid"));
+        partSold.put("source", params.get("source"));
+        partSold.put("realQuantity", realPartQuantity);
+        // 更新商品信息
+        itemsmapper.soldItemBytableById(partSold);
+    }
+
+    public void insertsoldPartItem(ItemsDTO itemsDTO) {
+        // 更新商品信息
+        itemsmapper.insertsoldPartItem(itemsDTO);
+    }
+
+    public void insertsoldNumPartItem(ItemsDTO itemsDTO) {
+        // 更新商品信息
+        itemsmapper.insertsoldPartItem(itemsDTO);
+    }
+
 }

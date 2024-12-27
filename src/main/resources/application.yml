@@ -16,13 +16,13 @@ spring:
     url: jdbc:mysql://101.35.54.61/tianshu?characterEncoding=utf-8&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: wl001017
-  jpa:
-    hibernate:
-      ddl-auto: update # 或者根据需要使用 `create`, `create-drop`, `validate`
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.MySQLDialect
-          format_sql: true
+#  jpa:
+#    hibernate:
+#      ddl-auto: update # 或者根据需要使用 `create`, `create-drop`, `validate`
+#      properties:
+#        hibernate:
+#          dialect: org.hibernate.dialect.MySQLDialect
+#          format_sql: true
     show-sql: true
   redis:
     host: localhost
