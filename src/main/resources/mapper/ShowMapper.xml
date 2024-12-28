@@ -34,7 +34,7 @@
 
   <select id="searchsoldpropbydis" resultMap="SoldItemResultMap">
     SELECT a.district,
-           SUM(a.number * a.price) AS totalprice
+           ROUND(SUM(a.number * a.price), 2) AS totalprice
     FROM solded_item a
     GROUP BY a.district;
   </select>
@@ -43,7 +43,7 @@
     SELECT
       a.source,
       b.sourceName,
-      SUM(a.number * a.price) AS totalprice
+      ROUND(SUM(a.number * a.price), 2) AS totalprice
     FROM
       solded_item a
         LEFT JOIN
@@ -59,7 +59,7 @@
       SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
       SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
       SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) THEN number * price ELSE 0 END) AS annualSales,
-      SUM(number * price) AS historicalSales
+      ROUND(SUM(number * price), 2) AS historicalSales
     FROM solded_item;
   </select>
 
@@ -75,7 +75,7 @@
       price,
       number,
       instime,
-      SUM(price * number) AS total_sales
+      ROUND(SUM(number * price), 2) AS total_sales
     FROM solded_item
     WHERE instime >= CURDATE() - INTERVAL (DAYOFWEEK(CURDATE()) -2) DAY
       AND instime < CURDATE() + INTERVAL (8 - DAYOFWEEK(CURDATE())) DAY
@@ -85,7 +85,7 @@
 </select>
 
   <select id="monthlySalesTrendChart" resultMap="SoldItemResultMap">
-    SELECT instime, sum(price * number) as totalPrice
+    SELECT instime, ROUND(SUM(number * price), 2) as totalPrice
     FROM solded_item
     WHERE instime >= CURDATE() - INTERVAL 1 MONTH
     group by instime
@@ -102,7 +102,7 @@
 </select>
 
 <select id="searchsoldByYearta" resultType="java.lang.Double">
-    SELECT SUM(a.number * a.price) FROM solded_item a WHERE a.source = 2;
+    SELECT ROUND(SUM(a.number * a.price), 2) FROM solded_item a WHERE a.source = 2;
 </select>
 
 <select id="searchsoldremaining" resultType="java.lang.Double">
