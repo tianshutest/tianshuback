@@ -20,10 +20,13 @@ public interface ShowClient {
     @GetMapping ("/searchsoldprop")
     List<SoldItemDTO> searchsoldprop(String type);
 
+    /**查询日月年销售额（总额）
+     * @return
+     */
     @GetMapping ("/searchSales")
     salesVolumeDTO searchSales();
 
-    /**充值总金额查询
+    /**充值总金额查询（塔货充值）
      * @return
      */
     @GetMapping("/getCost")
@@ -35,7 +38,7 @@ public interface ShowClient {
     @GetMapping("/getWeekSold")
     List<SoldItemDTO> weeklysoldQuery();
 
-    /**本月及上月销售额
+    /**本月及上月销售额（总额）
      * @return
      */
     @GetMapping("/getMonthlySales")
@@ -53,15 +56,27 @@ public interface ShowClient {
     @GetMapping("/visitTotalNum")
     VisitDTO visitTotalNum();
 
+    /**每年皇塔道具销售额（只含塔）
+     * @return
+     */
     @GetMapping("/searchsoldByYearta")
     Double searchsoldByYearta();
 
+    /**查询每年皇塔利润+利润率（只含塔）
+     * @return
+     */
     @GetMapping("/searchtaInventoryRate")
     List<String> searchtaInventoryRate();
 
+    /**
+     * @return
+     */
     @GetMapping("/searchsoldednumber")
     List<SoldItemDTO> searchsoldednumber();
 
+    /**查询每月销售额（总额）
+     * @return
+     */
     @GetMapping("/searchsoldedByMonth")
     List<SoldItemDTO> searchsoldedByMonth();
 }
