@@ -55,6 +55,7 @@
         a.imageUrls,
         a.delflag,
         b.soldedNum,
+        -- 计算总商品数的子查询
         (SELECT COUNT(*)
         FROM items
         WHERE delflag IN (0, 2)
@@ -80,11 +81,12 @@
         <if test="name != null and name != ''">
             AND a.name LIKE CONCAT('%', #{name}, '%')
         </if>
+        GROUP BY a.id, a.NAME, a.price, a.image, a.item_number, a.uid, a.remark, a.district, a.imageUrls, a.delflag, b.soldedNum
         ORDER BY
         CASE
         WHEN a.delflag = 0 THEN 0 ELSE 1
         END,
-        a.realQuantity desc
+        a.realQuantity DESC
         LIMIT #{pageSize} OFFSET #{offset};
     </select>
 

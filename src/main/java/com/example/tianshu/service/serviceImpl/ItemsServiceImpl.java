@@ -53,8 +53,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         ValueOperations<String, Object> valueOps = redisTemplate.opsForValue();
         if (queryItemsDTO.getName().isEmpty()){
             // Redis key 可以通过 queryItemsDTO 来生成
-            String redisKey = "page" + queryItemsDTO.getPageNum() + "/size" + queryItemsDTO.getPageSize()
-                    + "/type=" + queryItemsDTO.getType() + "/district=" + queryItemsDTO.getDistrict();
+            String redisKey = "page" + queryItemsDTO.getPageNum() + ":size" + queryItemsDTO.getPageSize()
+                    + ":type=" + queryItemsDTO.getType() + ":district=" + queryItemsDTO.getDistrict();
             // 获取 Redis 中的缓存数据
             items = (List<ItemsDO>) valueOps.get(redisKey);
             if (items != null) {
@@ -93,13 +93,15 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         ItemsDTO itemsDTO = new ItemsDTO();
         BeanUtils.copyProperties(itemsDO, itemsDTO);
         String randomUID = generateShortRandomUID();
-        String directoryPath = "C:/project/tianshufront/.vscode/public/images";
+        String directoryPath = "C:/project/tianshufrontvue/src/assets/images";
         itemsDTO.setUid(randomUID);
         if (files != null && !files.isEmpty()) {
             if (files.size() == 1){
                 MultipartFile file = files.get(0);
                 MultipartFile compress_file = FileCompression.compressImage(file);
                 String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
+                String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
+                saveImageToLocalDirectory(compress_file, directoryPathDist);
                 itemsDTO.setImage(imagesUrl);
             }
             List<String> imagesUrls = new ArrayList<>();
@@ -107,6 +109,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
                 try {
                     MultipartFile compress_file = FileCompression.compressImage(image);
                     String imageUrl = saveImageToLocalDirectory(compress_file, directoryPath);
+                    String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
+                    saveImageToLocalDirectory(compress_file, directoryPathDist);
                     imagesUrls.add(imageUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -126,7 +130,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         itemsmapper.insertItem(itemsDTO);
         Integer soldedsource = itemsDO.getSource();
         if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3)) {
-            insertsoldPartItem(itemsDTO);
+            itemsmapper.insertsoldPartItem(itemsDTO);
         }
     }
 
@@ -146,10 +150,12 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
     public void updateItem(MultipartFile file, ItemsDO itemsDO) {
         ItemsDTO itemsDTO = new ItemsDTO();
         BeanUtils.copyProperties(itemsDO, itemsDTO);
-        String directoryPath = "C:/project/tianshufront/.vscode/public/images";
+        String directoryPath = "C:/project/tianshufrontvue/src/assets/images";
         try {
             MultipartFile compress_file = FileCompression.compressImage(file);
             String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
+            String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
+            saveImageToLocalDirectory(compress_file, directoryPathDist);
             itemsDTO.setImage(imagesUrl);
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,7 +212,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3)) {
             params.put("uid", uuid);
             params.put("source", soldedsource); // 直接使用 soldedsource (假设是 Integer 类型)
-            soldPartItem(params, uuid, saleNum);
+            soldPartItem(params, saleNum);
         }
         itemsmapper.insertsoldedItem(itemInsertDTO);
         if (finalNum <= 0){
@@ -292,14 +298,11 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         return fileName;
     }
 
-    private void scheduledCacheDelete(String redisKey) {
-        // 延迟删除缓存的操作（例如，使用线程池或者定时任务）
-        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            redisTemplate.delete(redisKey);
-        }, 1, TimeUnit.SECONDS);  // 延迟 1 秒
-    }
-
-    public void soldPartItem(Map<String, Object> params, String uuid, int saleNum) {
+    /** 更新分表中的真实数量
+     * @param params 存放uid source的map
+     * @param saleNum 出售后的实际库存
+     */
+    public void soldPartItem(Map<String, Object> params, int saleNum) {
         // 查询商品信息
         ItemsDO itemsDO1 = itemsmapper.selectsoldItemBytableById(params);
         Map<String, Object> partSold = new HashMap<>();
@@ -312,15 +315,4 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         // 更新商品信息
         itemsmapper.soldItemBytableById(partSold);
     }
-
-    public void insertsoldPartItem(ItemsDTO itemsDTO) {
-        // 更新商品信息
-        itemsmapper.insertsoldPartItem(itemsDTO);
-    }
-
-    public void insertsoldNumPartItem(ItemsDTO itemsDTO) {
-        // 更新商品信息
-        itemsmapper.insertsoldPartItem(itemsDTO);
-    }
-
 }

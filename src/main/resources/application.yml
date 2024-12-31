@@ -25,7 +25,7 @@ spring:
 #          format_sql: true
 #    show-sql: true
   redis:
-    host: localhost
+    host: 101.35.54.61
     port: 6379
 #    password: yourpassword  # 替换为你设置的密码
 #    jedis:
