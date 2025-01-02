@@ -102,6 +102,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
                 String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
                 String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
                 saveImageToLocalDirectory(compress_file, directoryPathDist);
+                String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
+                saveImageToLocalDirectory(compress_file, directoryPathModify);
                 itemsDTO.setImage(imagesUrl);
             }
             List<String> imagesUrls = new ArrayList<>();
@@ -111,6 +113,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
                     String imageUrl = saveImageToLocalDirectory(compress_file, directoryPath);
                     String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
                     saveImageToLocalDirectory(compress_file, directoryPathDist);
+                    String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
+                    saveImageToLocalDirectory(compress_file, directoryPathModify);
                     imagesUrls.add(imageUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -156,6 +160,8 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
             String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
             String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
             saveImageToLocalDirectory(compress_file, directoryPathDist);
+            String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
+            saveImageToLocalDirectory(compress_file, directoryPathModify);
             itemsDTO.setImage(imagesUrl);
         } catch (IOException e) {
             e.printStackTrace();
