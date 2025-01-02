@@ -83,6 +83,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
     }
 
     /** 新增上架道具
+     * 图片储存三个文件地址 1.vue项目文件 2.vue构建后项目文件 3.操作上下架页面的文件
      * @param files 道具图片
      * @param itemsDO 道具详细信息
      * @throws IOException
