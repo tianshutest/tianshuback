@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface ShowService {
 
-    salesVolumeDTO searchSales();
+    salesVolumeDTO searchSales(String year);
 
     List<SoldItemDTO> searchsoldprop(String type);
 
-    List<CostDTO> getCost();
+    List<CostDTO> getCost(String year);
 
     List<SoldItemDTO> weeklysoldQuery();
 
@@ -23,9 +23,9 @@ public interface ShowService {
 
     VisitDTO visitTotalNum();
 
-    Double searchsoldByYearta();
+    Double searchsoldByYearta(String year);
 
-    List<String> searchtaInventoryRate();
+    List<String> searchtaInventoryRate(String year);
 
     List<SoldItemDTO> searchsoldednumber();
 

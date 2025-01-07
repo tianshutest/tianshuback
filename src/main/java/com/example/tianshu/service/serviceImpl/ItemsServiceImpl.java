@@ -95,15 +95,15 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         BeanUtils.copyProperties(itemsDO, itemsDTO);
         String randomUID = generateShortRandomUID();
         String directoryPath = "C:/project/tianshufrontvue/src/assets/images";
+        String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
+        String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
         itemsDTO.setUid(randomUID);
         if (files != null && !files.isEmpty()) {
             if (files.size() == 1){
                 MultipartFile file = files.get(0);
                 MultipartFile compress_file = FileCompression.compressImage(file);
                 String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
-                String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
                 saveImageToLocalDirectory(compress_file, directoryPathDist);
-                String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
                 saveImageToLocalDirectory(compress_file, directoryPathModify);
                 itemsDTO.setImage(imagesUrl);
             }
@@ -112,9 +112,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
                 try {
                     MultipartFile compress_file = FileCompression.compressImage(image);
                     String imageUrl = saveImageToLocalDirectory(compress_file, directoryPath);
-                    String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
                     saveImageToLocalDirectory(compress_file, directoryPathDist);
-                    String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
                     saveImageToLocalDirectory(compress_file, directoryPathModify);
                     imagesUrls.add(imageUrl);
                 } catch (IOException e) {
@@ -156,12 +154,12 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         ItemsDTO itemsDTO = new ItemsDTO();
         BeanUtils.copyProperties(itemsDO, itemsDTO);
         String directoryPath = "C:/project/tianshufrontvue/src/assets/images";
+        String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
+        String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
         try {
             MultipartFile compress_file = FileCompression.compressImage(file);
             String imagesUrl = saveImageToLocalDirectory(compress_file, directoryPath);
-            String directoryPathDist = "C:/project/tianshufrontvue/dist/img";
             saveImageToLocalDirectory(compress_file, directoryPathDist);
-            String directoryPathModify = "C:/project/tianshufrontModify/.vscode/public/images";
             saveImageToLocalDirectory(compress_file, directoryPathModify);
             itemsDTO.setImage(imagesUrl);
         } catch (IOException e) {

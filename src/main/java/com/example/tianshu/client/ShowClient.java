@@ -24,13 +24,13 @@ public interface ShowClient {
      * @return
      */
     @GetMapping ("/searchSales")
-    salesVolumeDTO searchSales();
+    salesVolumeDTO searchSales(String year);
 
     /**充值总金额查询（塔货充值）
      * @return
      */
     @GetMapping("/getCost")
-    List<CostDTO> costQuery();
+    List<CostDTO> costQuery(String year);
 
     /**本周的出售道具的信息
      * @return
@@ -60,13 +60,13 @@ public interface ShowClient {
      * @return
      */
     @GetMapping("/searchsoldByYearta")
-    Double searchsoldByYearta();
+    Double searchsoldByYearta(String year);
 
     /**查询每年皇塔利润+利润率（只含塔）
      * @return
      */
     @GetMapping("/searchtaInventoryRate")
-    List<String> searchtaInventoryRate();
+    List<String> searchtaInventoryRate(String year);
 
     /**
      * @return

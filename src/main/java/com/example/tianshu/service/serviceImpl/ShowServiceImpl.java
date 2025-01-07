@@ -16,8 +16,8 @@ public class ShowServiceImpl implements ShowService {
     private ShowMapper showMapper;
 
     @Override
-    public salesVolumeDTO searchSales() {
-        return showMapper.searchSales();
+    public salesVolumeDTO searchSales(String year) {
+        return showMapper.searchSales(year);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class ShowServiceImpl implements ShowService {
     }
 
     @Override
-    public List<CostDTO> getCost() {
-        return showMapper.inventoryRateQuery();
+    public List<CostDTO> getCost(String year) {
+        return showMapper.inventoryRateQuery(year);
     }
 
     @Override
@@ -55,16 +55,31 @@ public class ShowServiceImpl implements ShowService {
     }
 
     @Override
-    public Double searchsoldByYearta() {
-        return showMapper.searchsoldByYearta();
+    public Double searchsoldByYearta(String year) {
+        String source = "";
+        if(year.equals("2024")){
+            source = "2";
+        }else if(year.equals("2025")){
+            source = "4";
+        }
+        return showMapper.searchsoldByYearta(source);
     }
 
     @Override
-    public List<String> searchtaInventoryRate() {
+    public List<String> searchtaInventoryRate(String year) {
         List<String> list = new ArrayList<>();
-        double remaining = showMapper.searchsoldremaining();
-        double inventory = showMapper.searchsoldByYearta();
-        double cost = showMapper.searchsoldedtacost();
+        //仓库剩余价值量
+        double remaining = showMapper.searchsoldremaining(year);
+        //本年已售价值量
+        String source = "";
+        if(year.equals("2024")){
+            source = "2";
+        }else if(year.equals("2025")){
+            source = "4";
+        }
+        double inventory = showMapper.searchsoldByYearta(source);
+        //本年充值量
+        double cost = showMapper.searchsoldedtacost(source);
         double profit = inventory + remaining - cost;
         double profitRate = profit / cost;
         String formattedProfit = String.format("%.2f", profit);

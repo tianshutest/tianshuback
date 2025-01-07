@@ -24,8 +24,8 @@ public class ShowController  implements ShowClient {
     private ShowService showService;
 
     @Override
-    public List<CostDTO> costQuery() {
-        return showService.getCost();
+    public List<CostDTO> costQuery(String year) {
+        return showService.getCost(year);
     }
 
     @Override
@@ -49,13 +49,13 @@ public class ShowController  implements ShowClient {
     }
 
     @Override
-    public Double searchsoldByYearta() {
-        return showService.searchsoldByYearta();
+    public Double searchsoldByYearta(String year) {
+        return showService.searchsoldByYearta(year);
     }
 
     @Override
-    public List<String> searchtaInventoryRate() {
-        return showService.searchtaInventoryRate();
+    public List<String> searchtaInventoryRate(String year) {
+        return showService.searchtaInventoryRate(year);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class ShowController  implements ShowClient {
     }
 
     @Override
-    public salesVolumeDTO searchSales() {
-        return showService.searchSales();
+    public salesVolumeDTO searchSales(String year) {
+        return showService.searchSales(year);
     }
 }

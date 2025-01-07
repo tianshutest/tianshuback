@@ -56,15 +56,45 @@
 
   <select id="searchSales" resultMap="salesVolumeMap">
     SELECT
-      SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
-      SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
-      SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) THEN number * price ELSE 0 END) AS annualSales,
-      ROUND(SUM(number * price), 2) AS historicalSales
-    FROM solded_item;
+      dailySales,
+      monthklySales,
+      historicalSales,
+      annualSales
+    FROM
+      (
+        SELECT
+          SUM(CASE WHEN DATE(instime) = CURDATE() THEN number * price ELSE 0 END) AS dailySales,
+          SUM(CASE WHEN YEAR(instime) = YEAR(CURDATE()) AND MONTH(instime) = MONTH(CURDATE()) THEN number * price ELSE 0 END) AS monthklySales,
+          ROUND(SUM(number * price), 2) AS historicalSales
+        FROM solded_item
+      ) AS sales_data
+        CROSS JOIN
+      (
+        SELECT ROUND(SUM(CAST(number AS DECIMAL(10, 2)) * CAST(price AS DECIMAL(10, 2))), 1) AS annualSales
+        FROM solded_item
+        WHERE LEFT(instime, 4) = #{year}
+      ) AS annual_sales;
+
   </select>
 
   <select id="inventoryRateQuery" resultMap="CostResultMap">
-    select sum(cost) as cost from cost where source = '2'
+    <choose>
+      <when test="year == 2">
+        SELECT sum(cost) AS cost
+        FROM cost
+        WHERE source = '2' AND year = 2024
+      </when>
+      <when test="year == 4">
+        SELECT sum(cost) AS cost
+        FROM cost
+        WHERE year = 2025
+      </when>
+      <otherwise>
+        SELECT sum(cost) AS cost
+        FROM cost
+        WHERE year = #{year}
+      </otherwise>
+    </choose>
   </select>
 
   <select id="weeklysoldQuery" resultMap="SoldItemResultMap">
@@ -102,16 +132,24 @@
 </select>
 
 <select id="searchsoldByYearta" resultType="java.lang.Double">
-    SELECT ROUND(SUM(a.number * a.price), 2) FROM solded_item a WHERE a.source = 2;
+    SELECT ROUND(SUM(a.number * a.price), 2) FROM solded_item a WHERE a.source = #{source};
 </select>
 
 <select id="searchsoldremaining" resultType="java.lang.Double">
-    SELECT ROUND(SUM(a.realPrice * a.realQuantity), 2) AS total_price
-    FROM items_2024ta a;
+  SELECT ROUND(SUM(a.realPrice * a.realQuantity), 2) AS total_price
+  FROM
+  <choose>
+    <when test="year == 2025">
+      items_2025ta a
+    </when>
+    <when test="year == 2024">
+      items_2024ta a
+    </when>
+  </choose>
 </select>
 
 <select id="searchsoldedtacost" resultType="java.lang.Double">
-    select sum(cost) from cost where source = 2
+    select sum(cost) from cost where source = #{source}
 </select>
 
 <select id="searchsoldednumber" resultMap="SoldItemResultMap">

@@ -12,13 +12,13 @@ import java.util.List;
 @Mapper
 public interface ShowMapper {
 
-    salesVolumeDTO searchSales();
+    salesVolumeDTO searchSales(String year);
 
     List<SoldItemDTO> searchsoldpropbydis();
 
     List<SoldItemDTO> searchsoldpropbytype();
 
-    List<CostDTO> inventoryRateQuery();
+    List<CostDTO> inventoryRateQuery(String year);
 
     List<SoldItemDTO> weeklysoldQuery();
 
@@ -28,11 +28,11 @@ public interface ShowMapper {
 
     VisitDTO visitTotalNum();
 
-    Double searchsoldByYearta();
+    Double searchsoldByYearta(String source);
 
-    Double searchsoldremaining();
+    Double searchsoldremaining(String year);
 
-    Double searchsoldedtacost();
+    Double searchsoldedtacost(String source);
 
     List<SoldItemDTO> searchsoldednumber();
 
