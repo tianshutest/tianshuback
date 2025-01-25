@@ -79,12 +79,17 @@
 
   <select id="inventoryRateQuery" resultMap="CostResultMap">
     <choose>
-      <when test="year == 2">
+      <when test="year == 2024">
         SELECT sum(cost) AS cost
         FROM cost
         WHERE source = '2' AND year = 2024
       </when>
-      <when test="year == 4">
+      <when test="year == 000">
+        SELECT sum(cost) AS cost
+        FROM cost
+        WHERE year = 2024
+      </when>
+      <when test="year == 2025">
         SELECT sum(cost) AS cost
         FROM cost
         WHERE year = 2025
@@ -96,6 +101,13 @@
       </otherwise>
     </choose>
   </select>
+
+
+<select id="costTotalByYear" resultMap="CostResultMap">
+    SELECT sum(cost) AS cost
+    FROM cost
+    WHERE year = #{year}
+</select>
 
   <select id="weeklysoldQuery" resultMap="SoldItemResultMap">
   <![CDATA[

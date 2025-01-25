@@ -54,6 +54,11 @@ public class ShowController  implements ShowClient {
     }
 
     @Override
+    public Double costTotalByYear(String year) {
+        return showService.getCostTotal(year);
+    }
+
+    @Override
     public List<String> searchtaInventoryRate(String year) {
         return showService.searchtaInventoryRate(year);
     }

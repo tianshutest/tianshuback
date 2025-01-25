@@ -34,6 +34,8 @@ public interface ShowMapper {
 
     Double searchsoldedtacost(String source);
 
+    Double costTotalByYear(String year);
+
     List<SoldItemDTO> searchsoldednumber();
 
     List<SoldItemDTO> searchsoldedByMonth();

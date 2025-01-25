@@ -66,6 +66,11 @@ public class ShowServiceImpl implements ShowService {
     }
 
     @Override
+    public Double getCostTotal(String year) {
+        return showMapper.costTotalByYear(year);
+    }
+
+    @Override
     public List<String> searchtaInventoryRate(String year) {
         List<String> list = new ArrayList<>();
         //仓库剩余价值量

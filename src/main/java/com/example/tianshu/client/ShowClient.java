@@ -62,6 +62,9 @@ public interface ShowClient {
     @GetMapping("/searchsoldByYearta")
     Double searchsoldByYearta(String year);
 
+    @GetMapping("/getCostTotal")
+    Double costTotalByYear(String year);
+
     /**查询每年皇塔利润+利润率（只含塔）
      * @return
      */

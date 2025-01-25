@@ -25,6 +25,8 @@ public interface ShowService {
 
     Double searchsoldByYearta(String year);
 
+    Double getCostTotal(String year);
+
     List<String> searchtaInventoryRate(String year);
 
     List<SoldItemDTO> searchsoldednumber();

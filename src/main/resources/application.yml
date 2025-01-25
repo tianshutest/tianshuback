@@ -11,11 +11,22 @@ server:
 
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://101.35.54.61/tianshu?characterEncoding=utf-8&useSSL=false&requireSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: wl001017
+    hikari:
+      maximum-pool-size: 10  # 连接池最大连接数，根据实际情况调整
+      connection-timeout: 30000  # 连接超时时间，30秒
+      idle-timeout: 600000  # 空闲连接超时时间，10分钟
+      max-lifetime: 1800000  # 连接池中的连接最大生存时间，30分钟
+      validation-timeout: 5000  # 连接验证超时时间，5秒
+      connection-test-query: SELECT 1  # 用于验证连接是否有效
 #  jpa:
 #    hibernate:
 #      ddl-auto: update # 或者根据需要使用 `create`, `create-drop`, `validate`
