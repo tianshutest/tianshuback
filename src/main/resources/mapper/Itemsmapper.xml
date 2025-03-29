@@ -190,6 +190,13 @@
             </set>
             WHERE uid = #{uid}
         </when>
+        <when test="source == 4">
+            UPDATE items_2025ta
+            <set>
+                realQuantity = #{realQuantity}
+            </set>
+            WHERE uid = #{uid}
+        </when>
     </choose>
 </update>
 
