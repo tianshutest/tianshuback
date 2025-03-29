@@ -103,7 +103,7 @@
   </select>
 
 
-<select id="costTotalByYear" resultMap="CostResultMap">
+<select id="costTotalByYear" resultType="java.lang.Double">
     SELECT sum(cost) AS cost
     FROM cost
     WHERE year = #{year}

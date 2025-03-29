@@ -97,6 +97,23 @@
         WHERE uid = #{uid} and delflag in (0, 99)
     </select>
 
+    <select id="getPartItemById" parameterType="map" resultMap="BaseResultMap">
+        <choose>
+            <when test="source == 1">
+                SELECT uid,name,delflag,realQuantity,realPrice FROM items_warehouse WHERE uid = #{uid}
+            </when>
+            <when test="source == 2">
+                SELECT uid,name,delflag,realQuantity,realPrice FROM items_2024ta WHERE uid = #{uid}
+            </when>
+            <when test="source == 3">
+                SELECT uid,name,delflag,realQuantity,realPrice FROM items_11jin WHERE uid = #{uid}
+            </when>
+            <when test="source == 4">
+                SELECT uid,name,delflag,realQuantity,realPrice FROM items_2025ta WHERE uid = #{uid}
+            </when>
+        </choose>
+    </select>
+
     <insert id="insertItem" keyColumn="id" keyProperty="id">
         INSERT INTO items
             (name, price, item_number, imageUrls,image, type, district, remark, uid, provider, delflag, realQuantity, realPrice)
@@ -210,6 +227,12 @@
             VALUES
             (#{name},  #{type}, #{district}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
         </when>
+        <when test="source == 4">
+            INSERT INTO items_2025ta
+            (name, type, district, uid, provider, delflag, realQuantity, realPrice)
+            VALUES
+            (#{name},  #{type}, #{district}, #{uid}, #{provider}, 0, #{realQuantity}, #{realPrice})
+        </when>
     </choose>
 </insert>
 
@@ -237,6 +260,12 @@
         </when>
         <when test="addSource == 3">
             INSERT INTO items_11jin (uid, realQuantity, district, type, name)
+            VALUES (#{uid}, #{realQuantity}, #{district}, #{type}, #{name})
+            ON DUPLICATE KEY UPDATE
+            realquantity = VALUES(realQuantity);
+        </when>
+        <when test="addSource == 4">
+            INSERT INTO items_2025ta (uid, realQuantity, district, type, name)
             VALUES (#{uid}, #{realQuantity}, #{district}, #{type}, #{name})
             ON DUPLICATE KEY UPDATE
             realquantity = VALUES(realQuantity);

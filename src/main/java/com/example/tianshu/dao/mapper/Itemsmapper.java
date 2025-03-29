@@ -17,6 +17,8 @@ public interface Itemsmapper extends BaseMapper<ItemsDO> {
 
     ItemsDO getItemById(String uid);
 
+    ItemsDO getPartItemById(Map<String, Object> params);
+
     void insertItem(ItemsDTO itemsDTO);
 
     void deleteItemById(String uid);

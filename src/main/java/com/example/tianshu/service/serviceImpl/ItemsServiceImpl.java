@@ -132,7 +132,7 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         // 调用 MyBatis 的插入方法
         itemsmapper.insertItem(itemsDTO);
         Integer soldedsource = itemsDO.getSource();
-        if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3)) {
+        if (soldedsource.equals(1) || soldedsource.equals(2) || soldedsource.equals(3) || soldedsource.equals(4)) {
             itemsmapper.insertsoldPartItem(itemsDTO);
         }
     }
@@ -247,10 +247,27 @@ public class ItemsServiceImpl extends ServiceImpl<Itemsmapper, ItemsDO>
         addNum.put("uid", uid);
         itemsmapper.addNumById(addNum);
         Integer addSource = source;
-        if (addSource.equals(1) || addSource.equals(2) || addSource.equals(3)) {
+        if (addSource.equals(1) || addSource.equals(2) || addSource.equals(3) || addSource.equals(4)) {
+            Integer itemNumber1 = 0;  // 设置默认值为 0
+            try {
+                Map<String, Object> params = new HashMap<>();
+                params.put("source", addSource);
+                params.put("uid", uid);
+                ItemsDO itemsDO1 = itemsmapper.getPartItemById(params);
+                // 如果查询结果为空，直接使用默认值
+                if (itemsDO1 != null && itemsDO1.getItemNumber() != null) {
+                    itemNumber1 = Integer.valueOf(itemsDO1.getItemNumber().replaceAll("[^0-9]", ""));
+                } else {
+                    itemNumber1 = saleNum + Integer.valueOf(itemsDO1.getRealQuantity());  // 如果没有查到，itemNumber1 默认为 0
+                }
+            } catch (Exception e) {
+                // 如果捕获到任何异常，也设置为 0，而不是抛出异常
+                System.out.println("Error: " + e.getMessage());
+                itemNumber1 = saleNum;
+            }
             Map<String, Object> addPartNum = new HashMap<>();
             addPartNum.put("uid", uid);
-            addPartNum.put("realQuantity", realQuantity);
+            addPartNum.put("realQuantity", itemNumber1);
             addPartNum.put("district", district);
             addPartNum.put("type", type);
             addPartNum.put("addSource", addSource);
